@@ -11,7 +11,7 @@ fi
 HISTFILE=~/.histfile
 HISTSIZE=1000
 SAVEHIST=1000
-setopt appendhistory extendedglob nomatch
+setopt appendhistory extendedglob nomatch no_bang_hist
 bindkey -e
 # End of lines configured by zsh-newuser-install
 # The following lines were added by compinstall
@@ -106,5 +106,6 @@ e()
     emacsclient -n "$@"
 }
 
-
 export PATH=/usr/lib/ccache:${HOME}/bin:${HOME}/.local/bin:${PATH}
+
+eval `dircolors ${ZDOTDIR}/dircolors-solarized/dircolors.ansi-dark`
