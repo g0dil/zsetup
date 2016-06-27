@@ -111,5 +111,7 @@ export SCREENRC="${ZDOTDIR:-${HOME}}/.screenrc"
 export EDITOR=vi
 export VISUAL=vi
 
+[ -r ${HOME}/.zhost ] && source ${HOME}/.zhost
+
 eval `dircolors ${ZDOTDIR}/dircolors-solarized/dircolors.ansi-dark`
 
