@@ -108,5 +108,8 @@ e()
 
 export PATH=/usr/lib/ccache:${HOME}/bin:${HOME}/.local/bin:${PATH}
 export SCREENRC="${ZDOTDIR:-${HOME}}/.screenrc"
+export EDITOR=vi
+export VISUAL=vi
 
 eval `dircolors ${ZDOTDIR}/dircolors-solarized/dircolors.ansi-dark`
+
