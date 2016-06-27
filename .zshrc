@@ -107,5 +107,6 @@ e()
 }
 
 export PATH=/usr/lib/ccache:${HOME}/bin:${HOME}/.local/bin:${PATH}
+export SCREENRC="${ZDOTDIR:-${HOME}}/.screenrc"
 
 eval `dircolors ${ZDOTDIR}/dircolors-solarized/dircolors.ansi-dark`
