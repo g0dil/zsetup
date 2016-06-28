@@ -115,3 +115,4 @@ export VISUAL=vi
 
 eval `dircolors ${ZDOTDIR}/dircolors-solarized/dircolors.ansi-dark`
 
+alias !=screen
