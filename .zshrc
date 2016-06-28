@@ -27,8 +27,15 @@ WORDCHARS='*?_-.[]~=&;!#$%^(){}<>'
 LANG=en_US.UTF-8
 
 case "$TERM" in
-xterm*) export TERM=xterm-256color ;;
+xterm*)
+    export TERM=xterm-256color ;;
 *)
+    preexec() { 
+        local CMD=${1[(wr)^(*=*|sudo|-*)]}
+        echo -n "\ek${SCTITLE:-$CMD}\e\\"
+    }
+    LP_OLD_PROMPT_COMMAND='echo -n "\ek${SCTITLE:-zsh}\e\\"'
+    ;;
 esac
 
 c()
