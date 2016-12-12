@@ -123,3 +123,10 @@ export VISUAL=vi
 eval `dircolors ${ZDOTDIR}/dircolors-solarized/dircolors.ansi-dark`
 
 alias !=screen
+if [ -n "$SSH_TTY" -a -S "$SSH_AUTH_SOCK" ]; then
+    case "$SSH_AUTH_SOCK" in
+	$HOME/.ssh/ssh_auth_sock) ;;
+	*) ln -sf $SSH_AUTH_SOCK ~/.ssh/ssh_auth_sock
+    esac
+fi
+

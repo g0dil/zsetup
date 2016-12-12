@@ -4,3 +4,4 @@ defbce "on"
 caption always "%{= wk} %-w%{= KW} [%n %t] %{-}%+w %= | @%H | %l | %Y-%m-%d %c "
 escape ^zz
 shell /usr/bin/zsh
+setenv SSH_AUTH_SOCK $HOME/.ssh/ssh_auth_sock
