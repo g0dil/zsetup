@@ -130,3 +130,6 @@ if [ -n "$SSH_TTY" -a -S "$SSH_AUTH_SOCK" ]; then
     esac
 fi
 
+venv-enter() {
+    bash -c "source $1/bin/activate; exec zsh"
+}
