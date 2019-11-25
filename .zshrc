@@ -21,6 +21,21 @@ autoload -Uz compinit
 compinit
 # End of lines added by compinstall
 
+# enable kubectl completion
+if type kubectl >/dev/null; then
+    source <(kubectl completion zsh)
+    alias k=kubectl
+    export KUBECTX_CURRENT_BGCOLOR="$(tput setab 7)"
+    alias kctx=${ZDOTDIR}/kubectx/kubectx
+    alias kns=${ZDOTDIR}/kubectx/kubens
+    alias kon=kubeon
+    alias koff=kubeoff
+    fpath=(${ZDOTDIR}/completion $fpath)
+    compinit
+    source ${ZDOTDIR}/kube-ps1/kube-ps1.sh
+    LP_PS1_PREFIX='$(kube_ps1)'
+fi
+
 # zsh does not want '/' in WORDCHARS (no idea why it is in there in the first place)
 WORDCHARS='*?_-.[]~=&;!#$%^(){}<>'
 
@@ -30,7 +45,7 @@ case "$TERM" in
 xterm*)
     export TERM=xterm-256color ;;
 *)
-    preexec() { 
+    preexec() {
         local CMD=${1[(wr)^(*=*|sudo|-*)]}
         echo -n "\ek${SCTITLE:-$CMD}\e\\"
     }
@@ -113,7 +128,7 @@ e()
     emacsclient -n "$@"
 }
 
-export PATH=/usr/lib/ccache:${HOME}/bin:${HOME}/.local/bin:${PATH}
+export PATH=/usr/lib/ccache:${HOME}/bin:${HOME}/.local/bin:${HOME}/go/bin:${PATH}
 export SCREENRC="${ZDOTDIR:-${HOME}}/.screenrc"
 export EDITOR=vi
 export VISUAL=vi
@@ -125,8 +140,8 @@ eval `dircolors ${ZDOTDIR}/dircolors-solarized/dircolors.ansi-dark`
 alias !=screen
 if [ -n "$SSH_TTY" -a -S "$SSH_AUTH_SOCK" ]; then
     case "$SSH_AUTH_SOCK" in
-	$HOME/.ssh/ssh_auth_sock) ;;
-	*) ln -sf $SSH_AUTH_SOCK ~/.ssh/ssh_auth_sock
+        $HOME/.ssh/ssh_auth_sock) ;;
+        *) ln -sf $SSH_AUTH_SOCK ~/.ssh/ssh_auth_sock
     esac
 fi
 

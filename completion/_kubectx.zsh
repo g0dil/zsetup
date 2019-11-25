@@ -1,0 +1,1 @@
+../kubectx/completion/kubectx.zsh
