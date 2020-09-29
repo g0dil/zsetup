@@ -36,6 +36,11 @@ if type kubectl >/dev/null; then
     LP_PS1_PREFIX='$(kube_ps1)'
 fi
 
+# enable helm completion
+if type helm >/dev/null; then
+    source <(helm completion zsh)
+fi
+
 # zsh does not want '/' in WORDCHARS (no idea why it is in there in the first place)
 WORDCHARS='*?_-.[]~=&;!#$%^(){}<>'
 
@@ -128,7 +133,7 @@ e()
     emacsclient -n "$@"
 }
 
-export PATH=/usr/lib/ccache:${HOME}/bin:${HOME}/.local/bin:${HOME}/go/bin:${PATH}
+export PATH=/usr/lib/ccache:${HOME}/bin:${HOME}/.local/bin:${HOME}/go/bin:${HOME}/.krew/bin:${PATH}
 export SCREENRC="${ZDOTDIR:-${HOME}}/.screenrc"
 export EDITOR=vi
 export VISUAL=vi
