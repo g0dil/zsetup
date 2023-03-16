@@ -1,11 +1,131 @@
+# Start configuration added by Zim install {{{
 #
 # User configuration sourced by interactive shells
 #
 
-# Source zim
-if [[ -s ${ZDOTDIR:-${HOME}}/.zim/init.zsh ]]; then
-  source ${ZDOTDIR:-${HOME}}/.zim/init.zsh
+# -----------------
+# Zsh configuration
+# -----------------
+
+#
+# History
+#
+
+# Remove older command from the history if a duplicate is to be added.
+setopt HIST_IGNORE_ALL_DUPS
+
+#
+# Input/output
+#
+
+# Set editor default keymap to emacs (`-e`) or vi (`-v`)
+bindkey -e
+
+# Prompt for spelling correction of commands.
+#setopt CORRECT
+
+# Customize spelling correction prompt.
+#SPROMPT='zsh: correct %F{red}%R%f to %F{green}%r%f [nyae]? '
+
+# Remove path separator from WORDCHARS.
+WORDCHARS=${WORDCHARS//[\/]}
+
+
+# --------------------
+# Module configuration
+# --------------------
+
+#
+# completion
+#
+
+# Set a custom path for the completion dump file.
+# If none is provided, the default ${ZDOTDIR:-${HOME}}/.zcompdump is used.
+#zstyle ':zim:completion' dumpfile "${ZDOTDIR:-${HOME}}/.zcompdump-${ZSH_VERSION}"
+
+#
+# git
+#
+
+# Set a custom prefix for the generated aliases. The default prefix is 'G'.
+#zstyle ':zim:git' aliases-prefix 'g'
+
+#
+# input
+#
+
+# Append `../` to your input for each `.` you type after an initial `..`
+#zstyle ':zim:input' double-dot-expand yes
+
+#
+# termtitle
+#
+
+# Set a custom terminal title format using prompt expansion escape sequences.
+# See http://zsh.sourceforge.net/Doc/Release/Prompt-Expansion.html#Simple-Prompt-Escapes
+# If none is provided, the default '%n@%m: %~' is used.
+#zstyle ':zim:termtitle' format '%1~'
+
+#
+# zsh-autosuggestions
+#
+
+# Customize the style that the suggestions are shown with.
+# See https://github.com/zsh-users/zsh-autosuggestions/blob/master/README.md#suggestion-highlight-style
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=180' # solarized-light
+# ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=60' # solarized-dark
+
+#
+# zsh-syntax-highlighting
+#
+
+# Set what highlighters will be used.
+# See https://github.com/zsh-users/zsh-syntax-highlighting/blob/master/docs/highlighters.md
+ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets)
+
+# Customize the main highlighter styles.
+# See https://github.com/zsh-users/zsh-syntax-highlighting/blob/master/docs/highlighters/main.md#how-to-tweak-it
+#typeset -A ZSH_HIGHLIGHT_STYLES
+#ZSH_HIGHLIGHT_STYLES[comment]='fg=10'
+
+# ------------------
+# Initialize modules
+# ------------------
+
+if [[ ${ZIM_HOME}/init.zsh -ot ${ZDOTDIR:-${HOME}}/.zimrc ]]; then
+  # Update static initialization script if it's outdated, before sourcing it
+  source ${ZIM_HOME}/zimfw.zsh init -q
 fi
+source ${ZIM_HOME}/init.zsh
+
+# ------------------------------
+# Post-init module configuration
+# ------------------------------
+
+#
+# zsh-history-substring-search
+#
+
+# Bind ^[[A/^[[B manually so up/down works both before and after zle-line-init
+bindkey '^[[A' history-substring-search-up
+bindkey '^[[B' history-substring-search-down
+
+# Bind up and down keys
+zmodload -F zsh/terminfo +p:terminfo
+if [[ -n ${terminfo[kcuu1]} && -n ${terminfo[kcud1]} ]]; then
+  bindkey ${terminfo[kcuu1]} history-substring-search-up
+  bindkey ${terminfo[kcud1]} history-substring-search-down
+fi
+
+bindkey '^P' history-substring-search-up
+bindkey '^N' history-substring-search-down
+bindkey -M vicmd 'k' history-substring-search-up
+bindkey -M vicmd 'j' history-substring-search-down
+# }}} End configuration added by Zim install
+
+#
+# User configuration sourced by interactive shells
+#
 
 # Lines configured by zsh-newuser-install
 HISTFILE=~/.histfile
@@ -33,12 +153,31 @@ if type kubectl >/dev/null; then
     fpath=(${ZDOTDIR}/completion $fpath)
     compinit
     source ${ZDOTDIR}/kube-ps1/kube-ps1.sh
-    LP_PS1_PREFIX='$(kube_ps1)'
+    precmd() {
+      p="$(kube_ps1)"
+      if [ -n "$p" ]; then
+        print -P "\n$p"
+      fi
+    }
+    #LP_PS1_PREFIX='$(kube_ps1)'
+    # The kubernetes prompt is enabled by .direnv where required
+    export KUBE_PS1_ENABLED=off
 fi
 
 # enable helm completion
 if type helm >/dev/null; then
     source <(helm completion zsh)
+fi
+
+# enable az (azure client) completion
+if type az >/dev/null && [ -r /etc/bash_completion.d/azure-cli ]; then
+    autoload -U +X bashcompinit && bashcompinit
+    source /etc/bash_completion.d/azure-cli
+fi
+
+# enable oc {openshift/okd client) completion
+if type oc >/dev/null; then
+  source <(oc completion zsh)
 fi
 
 # zsh does not want '/' in WORDCHARS (no idea why it is in there in the first place)
@@ -140,9 +279,10 @@ export VISUAL=vi
 
 [ -r ${HOME}/.zhost ] && source ${HOME}/.zhost
 
+eval "$(direnv hook zsh)"
+
 eval `dircolors ${ZDOTDIR}/dircolors-solarized/dircolors.ansi-dark`
 
-alias !=screen
 if [ -n "$SSH_TTY" -a -S "$SSH_AUTH_SOCK" ]; then
     case "$SSH_AUTH_SOCK" in
         $HOME/.ssh/ssh_auth_sock) ;;
@@ -153,3 +293,7 @@ fi
 venv-enter() {
     bash -c "source $1/bin/activate; exec zsh"
 }
+
+alias ssh="env TERM=xterm-color ssh"
+alias L="less -S"
+alias P="parallel --jobs 0 --lb"
