@@ -98,6 +98,8 @@ if [[ ${ZIM_HOME}/init.zsh -ot ${ZDOTDIR:-${HOME}}/.zimrc ]]; then
 fi
 source ${ZIM_HOME}/init.zsh
 
+zstyle ':zim:prompt-pwd:fish-style' dir-length 3
+
 # ------------------------------
 # Post-init module configuration
 # ------------------------------
@@ -146,8 +148,16 @@ if type kubectl >/dev/null; then
     source <(kubectl completion zsh)
     alias k=kubectl
     export KUBECTX_CURRENT_BGCOLOR="$(tput setab 7)"
-    alias kctx=${ZDOTDIR}/kubectx/kubectx
-    alias kns=${ZDOTDIR}/kubectx/kubens
+    kctx() {
+      ${ZDOTDIR}/kubectx/kubectx "$@"
+      KUBE_PS1_KUBECONFIG_CACHE=""
+      _kube_ps1_update_cache
+    }
+    kns() {
+      ${ZDOTDIR}/kubectx/kubens "$@"
+      KUBE_PS1_KUBECONFIG_CACHE=""
+      _kube_ps1_update_cache
+    }
     alias kon=kubeon
     alias koff=kubeoff
     fpath=(${ZDOTDIR}/completion $fpath)
@@ -265,6 +275,26 @@ c()
 t()
 {
     cd "$(git rev-parse --show-toplevel)"
+}
+
+tt()
+{
+    while true; do
+        t="$(git -C .. rev-parse --show-toplevel 2>/dev/null)"
+        if [ -z "$t" ]; then
+            break
+        fi
+        cd "$t"
+    done
+}
+
+ttt()
+{
+  if [ -n "$PROJECT_TOP" ]; then
+    cd "$PROJECT_TOP";
+  else
+    cd
+  fi
 }
 
 e()

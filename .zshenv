@@ -3,7 +3,7 @@
 # User configuration sourced by all invocations of the shell
 #
 
-ZDOTDIR=${HOME}/.zsetup
+export ZDOTDIR=${HOME}/.zsetup
 
 # Define Zim location
 : ${ZIM_HOME=${ZDOTDIR:-${HOME}}/.zim}
